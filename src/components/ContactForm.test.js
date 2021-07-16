@@ -10,16 +10,37 @@ test('renders without errors', ()=>{
 
 test('renders the contact form header', ()=> {
     render(<ContactForm />)
-    const header = await screen.findByText(/Contact Form/i)
-    expect(header).toBeVisible
+    const header = screen.findByText(/Contact Form/i);
+    expect(header).toBeVisible;
 });
 
 test('renders ONE error message if user enters less then 5 characters into firstname.', async () => {
-    
+    render(<ContactForm />)
+
+    const firstName = screen.getByLabelText("First Name*");
+    userEvent.type(firstName, "Pal");
+
+    const lastName = screen.getByLabelText("Last Name*");
+    userEvent.type(lastName, "McCartney");
+
+    const email = screen.getByLabelText("Email*");
+    userEvent.type(email, "thelongandwindingroad@thebeatles.com");
+
+    const errors = await screen.findAllByText(/error/i)
+
+    expect(errors.length).toEqual(1)
+
 });
 
 test('renders THREE error messages if user enters no values into any fields.', async () => {
+    render(<ContactForm />)
+
+    const button = screen.getByRole("button");
+    userEvent.click(button);
+
+    const errors = await screen.findAllByText(/error/i);
     
+    expect(errors.length).toEqual(3);
 });
 
 test('renders ONE error message if user enters a valid first name and last name but no email.', async () => {
